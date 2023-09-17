@@ -47,6 +47,12 @@ TODO list:
   + resist
   + 13:12
   + no ordr
+- find a good face name
+  + pig_face
+  + acab_face
+  + one_struggle/one_fight
+  + statement_clock
+  + motivational_clock
 
 function watch_set_pixel could allow better results
 */
