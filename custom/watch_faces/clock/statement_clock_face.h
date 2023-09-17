@@ -22,6 +22,35 @@
  * SOFTWARE.
  */
 
+/* mod of simple_clock: ACAB **beta version**
+
+Essentially the very same as the statdard "simple_clock_face", including the
+low energy mode and all other functionality. Optionally you can:
+
+Press light for > .5 sec to (de)activate acab-mode. Visible only after next
+screen flush, i.e. next minute, face change.
+
+TODO list:
+- modularize slogan
+- add further slogan options
+  + eat the rich
+  + alerta antifacista
+  + jin jiyan azadi
+  + end patriachy
+  + siamo tutti antifacisti
+  + refugees welcome (difficult to type?)
+  + cycle through names of recent heros and victims facists/police
+- allow random slogan choice
+- allow to customize choice of slogans
+- options for time in top row + one of
+  + antifa
+  + resist
+  + 13:12
+  + no ordr
+
+function watch_set_pixel could allow better results
+*/
+
 #ifndef SIMPLE_CLOCK_FACE_H_
 #define SIMPLE_CLOCK_FACE_H_
 
@@ -31,6 +60,7 @@ typedef struct {
     uint32_t previous_date_time;
     uint8_t last_battery_check;
     uint8_t watch_face_index;
+    bool acab_enabled;
     bool signal_enabled;
     bool battery_low;
     bool alarm_enabled;

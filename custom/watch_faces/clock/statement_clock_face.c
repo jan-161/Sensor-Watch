@@ -43,6 +43,7 @@ void simple_clock_face_setup(movement_settings_t *settings, uint8_t watch_face_i
         simple_clock_state_t *state = (simple_clock_state_t *)*context_ptr;
         state->signal_enabled = false;
         state->watch_face_index = watch_face_index;
+        state->acab_enabled = false;
     }
 }
 
@@ -95,16 +96,63 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
             // ...and set the LAP indicator if low.
             if (state->battery_low) watch_set_indicator(WATCH_INDICATOR_LAP);
 
-            if ((date_time.reg >> 6) == (previous_date_time >> 6) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
+            if ((date_time.reg >> 6) == (previous_date_time >> 6) && event.event_type != EVENT_LOW_ENERGY_UPDATE)
+            {
                 // everything before seconds is the same, don't waste cycles setting those segments.
-                watch_display_character_lp_seconds('0' + date_time.unit.second / 10, 8);
-                watch_display_character_lp_seconds('0' + date_time.unit.second % 10, 9);
-                break;
-            } else if ((date_time.reg >> 12) == (previous_date_time >> 12) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
+                if (state->acab_enabled) { // no border no nation slogan
+                    switch (date_time.unit.second) {
+                    case 11: // arbitrarily start at 11 (I believe 1 doesn't enter this section)
+                    case 13:
+                        pos = 0;
+                        sprintf(buf, "      no  ");
+                        break;
+                    case 12:
+                        pos = 4;
+                        sprintf(buf, " bordr");
+                        break;
+                    case 14:
+                        pos = 4;
+                        sprintf(buf, "nA+ion");
+                        break;
+                    case 15:
+                        pos = 4;
+                        sprintf(buf, "STOP  ");
+                        break;
+                    case 16:
+                        pos = 4;
+                        sprintf(buf, " dEPor");
+                        break;
+                    case 17:
+                        pos = 4;
+                        sprintf(buf, "+a+ion");
+                        break;
+                    case 18:
+                        pos = 0;
+                        sprintf(buf, "aCab%2d%02d%02d", date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
+                        break;
+                    default:
+                        watch_display_character_lp_seconds('0' + date_time.unit.second / 10, 8);
+                        watch_display_character_lp_seconds('0' + date_time.unit.second % 10, 9);
+                        break;
+                    }
+                    if ((date_time.unit.second>=11) && (date_time.unit.second<=18)) {
+                        watch_display_string(buf, pos);
+                    }
+                    break;
+                } else {
+                    watch_display_character_lp_seconds('0' + date_time.unit.second / 10, 8);
+                    watch_display_character_lp_seconds('0' + date_time.unit.second % 10, 9);
+                    break;
+                }
+            }
+            else if ((date_time.reg >> 12) == (previous_date_time >> 12) && event.event_type != EVENT_LOW_ENERGY_UPDATE)
+            {
                 // everything before minutes is the same.
                 pos = 6;
                 sprintf(buf, "%02d%02d", date_time.unit.minute, date_time.unit.second);
-            } else {
+            }
+            else
+            {
                 // other stuff changed; let's do it all.
                 if (!settings->bit.clock_mode_24h) {
                     // if we are in 12 hour mode, do some cleanup.
@@ -119,14 +167,25 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
                 pos = 0;
                 if (event.event_type == EVENT_LOW_ENERGY_UPDATE) {
                     if (!watch_tick_animation_is_running()) watch_start_tick_animation(500);
-                    sprintf(buf, "%s%2d%2d%02d  ", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute);
+                    if (state->acab_enabled) {
+                        sprintf(buf, "aCab%2d%02d  ", date_time.unit.hour, date_time.unit.minute);
+                    } else {
+                        sprintf(buf, "%s%2d%2d%02d  ", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute);
+                    }
                 } else {
-                    sprintf(buf, "%s%2d%2d%02d%02d", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
+                    if (state->acab_enabled) {
+                        sprintf(buf, "aCab%2d%02d%02d", date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
+                    } else {
+                        sprintf(buf, "%s%2d%2d%02d%02d", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
+                    }
                 }
             }
             watch_display_string(buf, pos);
             // handle alarm indicator
             if (state->alarm_enabled != settings->bit.alarm_enabled) _update_alarm_indicator(settings->bit.alarm_enabled, state);
+            break;
+        case EVENT_LIGHT_LONG_UP:
+            state->acab_enabled = !state->acab_enabled;
             break;
         case EVENT_ALARM_LONG_PRESS:
             state->signal_enabled = !state->signal_enabled;
