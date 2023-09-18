@@ -57,8 +57,8 @@ TODO list:
 function watch_set_pixel could allow better results
 */
 
-#ifndef SIMPLE_CLOCK_FACE_H_
-#define SIMPLE_CLOCK_FACE_H_
+#ifndef MOTIVATION_FACE_H_
+#define MOTIVATION_FACE_H_
 
 #include "movement.h"
 
@@ -70,20 +70,20 @@ typedef struct {
     bool signal_enabled;
     bool battery_low;
     bool alarm_enabled;
-} simple_clock_state_t;
+} motivation_state_t;
 
-void simple_clock_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
-void simple_clock_face_activate(movement_settings_t *settings, void *context);
-bool simple_clock_face_loop(movement_event_t event, movement_settings_t *settings, void *context);
-void simple_clock_face_resign(movement_settings_t *settings, void *context);
-bool simple_clock_face_wants_background_task(movement_settings_t *settings, void *context);
+void motivation_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
+void motivation_face_activate(movement_settings_t *settings, void *context);
+bool motivation_face_loop(movement_event_t event, movement_settings_t *settings, void *context);
+void motivation_face_resign(movement_settings_t *settings, void *context);
+bool motivation_face_wants_background_task(movement_settings_t *settings, void *context);
 
-#define simple_clock_face ((const watch_face_t){ \
-    simple_clock_face_setup, \
-    simple_clock_face_activate, \
-    simple_clock_face_loop, \
-    simple_clock_face_resign, \
-    simple_clock_face_wants_background_task, \
+#define motivation_face ((const watch_face_t){ \
+    motivation_face_setup, \
+    motivation_face_activate, \
+    motivation_face_loop, \
+    motivation_face_resign, \
+    motivation_face_wants_background_task, \
 })
 
-#endif // SIMPLE_CLOCK_FACE_H_
+#endif // MOTIVATION_FACE_H_

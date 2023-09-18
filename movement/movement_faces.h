@@ -103,7 +103,7 @@
 #include "minute_repeater_decimal_face.h"
 #include "tuning_tones_face.h"
 #include "kitchen_conversions_face.h"
-#include "statement_clock_face.h"
+#include "motivation_face.h"
 // New includes go above this line.
 
 #endif // MOVEMENT_FACES_H_
